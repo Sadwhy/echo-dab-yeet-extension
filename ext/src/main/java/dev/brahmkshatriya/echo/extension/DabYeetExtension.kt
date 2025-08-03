@@ -147,20 +147,20 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
 
     // ====== ShareClient ===== //
 
-override suspend fun onShare(item: EchoMediaItem): String {
-    return when(item) {
-        is EchoMediaItem.TrackItem -> "https://www.qobuz.com/us-en/album/${item.extras["albumId"]}"
-        is EchoMediaItem.Lists.AlbumItem -> "https://www.qobuz.com/us-en/album/${item.id}"
-        is EchoMediaItem.Profile.ArtistItem -> {
-            val id = item.id
-            val slug = item.extras["slug"]
-            "https://www.qobuz.com/us-en/interpreter/$slug/$id"
+    override suspend fun onShare(item: EchoMediaItem): String {
+        return when(item) {
+            is EchoMediaItem.TrackItem -> "https://www.qobuz.com/us-en/album/${item.extras["albumId"]}"
+            is EchoMediaItem.Lists.AlbumItem -> "https://www.qobuz.com/us-en/album/${item.id}"
+            is EchoMediaItem.Profile.ArtistItem -> {
+                val id = item.id
+                val slug = item.extras["slug"]
+                "https://www.qobuz.com/us-en/interpreter/$slug/$id"
+            }
+            is EchoMediaItem.Lists.PlaylistItem -> throw ClientException.NotSupported("TODO: Playlist sharing")
+            is EchoMediaItem.Lists.RadioItem -> throw ClientException.NotSupported("Will not be implement")
+            is EchoMediaItem.Profile.UserItem -> throw ClientException.NotSupported("Will not be implement")
         }
-        is EchoMediaItem.Lists.PlaylistItem -> throw ClientException.NotSupported()
-        is EchoMediaItem.Lists.RadioItem -> throw ClientException.NotSupported()
-        is EchoMediaItem.Profile.UserItem -> throw ClientException.NotSupported()
     }
-}
 
     // ===== Utils ===== //
 
