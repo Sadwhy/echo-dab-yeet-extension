@@ -156,9 +156,9 @@ override suspend fun onShare(item: EchoMediaItem): String {
             val slug = item.extras["slug"]
             "https://www.qobuz.com/us-en/interpreter/$slug/$id"
         }
-        is EchoMediaItem.Lists.PlaylistItem -> ClientException.NotSupported()
-        is EchoMediaItem.Lists.RadioItem -> ClientException.NotSupported()
-        is EchoMediaItem.Profile.UserItem -> ClientException.NotSupported()
+        is EchoMediaItem.Lists.PlaylistItem -> throw ClientException.NotSupported()
+        is EchoMediaItem.Lists.RadioItem -> throw ClientException.NotSupported()
+        is EchoMediaItem.Profile.UserItem -> throw ClientException.NotSupported()
     }
 }
 
