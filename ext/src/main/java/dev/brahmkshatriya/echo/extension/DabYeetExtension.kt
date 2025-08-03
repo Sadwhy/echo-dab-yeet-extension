@@ -148,15 +148,15 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
 
     override suspend fun onShare(item: EchoMediaItem): String {
         return when(item) {
-            is EchoMediaItem.Track -> "https://www.qobuz.com/us-en/album/${(item as? EchoMediaItem.Track)?.track.album.id}"
-            is EchoMediaItem.Album -> "https://www.qobuz.com/us-en/album/${(item as? EchoMediaItem.Album)?.album.id}"
+            is EchoMediaItem.Track -> "https://www.qobuz.com/us-en/album/${item.track.album.id}"
+            is EchoMediaItem.Album -> "https://www.qobuz.com/us-en/album/${item.album.id}"
             is EchoMediaItem.Artist -> {
-                val artist = (item as? EchoMediaItem.Artist)?.artist
+                val artist = item.artist
                 val id = artist.id
                 val slug = artist.extras["slug"]
                 "https://www.qobuz.com/us-en/interpreter/$slug/$id"
             }
-            else -> ""
+            else -> ClientException.NotSupported()
         }
     }
 
