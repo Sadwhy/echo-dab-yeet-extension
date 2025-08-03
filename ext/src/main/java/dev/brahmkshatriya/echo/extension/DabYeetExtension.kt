@@ -147,19 +147,20 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
 
     // ====== ShareClient ===== //
 
-    override suspend fun onShare(item: EchoMediaItem): String {
-        return when(item) {
-            is EchoMediaItem.Track -> "https://www.qobuz.com/us-en/album/${item.track.album.id}"
-            is EchoMediaItem.Album -> "https://www.qobuz.com/us-en/album/${item.album.id}"
-            is EchoMediaItem.Artist -> {
-                val artist = item.artist
-                val id = artist.id
-                val slug = artist.extras["slug"]
-                "https://www.qobuz.com/us-en/interpreter/$slug/$id"
-            }
-            else -> ClientException.NotSupported()
+override suspend fun onShare(item: EchoMediaItem): String {
+    return when(item) {
+        is EchoMediaItem.TrackItem -> "https://www.qobuz.com/us-en/album/${item.extras["albumId"]}"
+        is EchoMediaItem.Lists.AlbumItem -> "https://www.qobuz.com/us-en/album/${item.id}"
+        is EchoMediaItem.Profile.ArtistItem -> {
+            val id = item.id
+            val slug = item.extras["slug"]
+            "https://www.qobuz.com/us-en/interpreter/$slug/$id"
         }
+        is EchoMediaItem.Lists.PlaylistItem -> ClientException.NotSupported()
+        is EchoMediaItem.Lists.RadioItem -> ClientException.NotSupported()
+        is EchoMediaItem.Profile.UserItem -> ClientException.NotSupported()
     }
+}
 
     // ===== Utils ===== //
 

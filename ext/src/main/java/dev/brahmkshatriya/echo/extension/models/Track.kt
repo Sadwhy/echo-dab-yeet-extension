@@ -48,6 +48,9 @@ data class Track(
             isExplicit = parentalWarning,
             irsc = isrc,
             genres = genre.split(" ").filter { it.isNotBlank() },
+            extras = mapOf(
+                "albumId" to albumId
+            ),
             streamables = listOf(
                 Streamable.server(
                     id = id,
