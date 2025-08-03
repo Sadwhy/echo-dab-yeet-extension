@@ -6,6 +6,7 @@ import dev.brahmkshatriya.echo.common.clients.AlbumClient
 import dev.brahmkshatriya.echo.common.clients.ArtistClient
 import dev.brahmkshatriya.echo.common.clients.ExtensionClient
 import dev.brahmkshatriya.echo.common.clients.SearchFeedClient
+import dev.brahmkshatriya.echo.common.clients.ShareClient
 import dev.brahmkshatriya.echo.common.clients.TrackClient
 import dev.brahmkshatriya.echo.common.helpers.PagedData
 import dev.brahmkshatriya.echo.common.models.Album
@@ -24,7 +25,7 @@ import dev.brahmkshatriya.echo.common.settings.Settings
 import dev.brahmkshatriya.echo.extension.network.ApiService
 import okhttp3.OkHttpClient
 
-class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumClient, ArtistClient {
+class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumClient, ArtistClient, ShareClient {
 
     private val client by lazy { OkHttpClient.Builder().build() }
 
@@ -137,11 +138,41 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
         if (artist.isLoaded()) {
             return artist
         } else {
-            return api.getArtist(artist.id).artist.toArtist()
+            return api.getArtist(artist.id).toArtist()
         }
     }
 
     override fun getShelves(artist: Artist): PagedData<Shelf> = PagedData.empty<Shelf>()
+
+    // ====== ShareClient ===== //
+
+    /**
+    override suspend fun onShare(item: EchoMediaItem): String {
+        return when(item) {
+            is Track -> "https://www.qobuz.com/us-en/album/${(item as? EchoMediaItem.Track)?.track.album.id}"
+            is Album -> "https://www.qobuz.com/us-en/album/${(item as? EchoMediaItem.Album)?.album.id}"
+            is Artist -> {
+                val artist = (item as? EchoMediaItem.Artist)?.artist
+                val id = artist.id
+                val slug = artist.extras["slug"]
+                "https://www.qobuz.com/us-en/interpreter/$slug/$id"
+            }
+        }
+    }
+    */
+
+    override suspend fun onShare(item: EchoMediaItem): String {
+        return when (item) {
+            is Track -> "https://www.qobuz.com/us-en/album/${item.track.album.id}"
+            is Album -> "https://www.qobuz.com/us-en/album/${item.album.id}"
+            is Artist -> {
+                val artist = item.artist
+                val id = artist.id
+                val slug = artist.extras["slug"]
+                "https://www.qobuz.com/us-en/interpreter/$slug/$id"
+            }
+        }
+    }
 
     // ===== Utils ===== //
 
@@ -150,7 +181,7 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
             is Track -> extras["isLoaded"] == "true"
             is Album -> extras["isLoaded"] == "true"
             is Artist -> extras["isLoaded"] == "true"
-            else -> false
+            else -> throw TypeCastException("Type mismatch: expected Echo Model but found ${this::class.simpleName}")
         }
     }
 

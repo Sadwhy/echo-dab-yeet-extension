@@ -11,7 +11,23 @@ import kotlinx.serialization.json.Json
 data class ArtistResponse(
     val artist: Artist,
     val albums: List<Album>
-)
+) {
+    fun toArtist(): EchoArtist {
+        val albumList = albums.map { it.toAlbum() }
+        return EchoArtist(
+            id = artist.id,
+            name = artist.name,
+            cover = artist.image.high?.toImageHolder(),
+            description = artist.biography?.content.orEmpty(),
+            extras = mapOf(
+                "similarArtistIds" to Json.encodeToString(artist.similarArtistIds),
+                "slug" to artist.slug,
+                "albumList" to Json.encodeToString(albumList),
+                "isLoaded" to "true"
+            )
+        )
+    }
+}
 
 @Serializable
 data class Biography(
@@ -43,6 +59,7 @@ data class Artist(
             description = biography?.content.orEmpty(),
             extras = mapOf(
                 "similarArtistIds" to Json.encodeToString(similarArtistIds),
+                "slug" to slug,
                 "isLoaded" to "true"
             )
         )
