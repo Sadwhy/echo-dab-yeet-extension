@@ -148,14 +148,15 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
 
     override suspend fun onShare(item: EchoMediaItem): String {
         return when(item) {
-            is Track -> "https://www.qobuz.com/us-en/album/${(item as? EchoMediaItem.Track)?.track.album.id}"
-            is Album -> "https://www.qobuz.com/us-en/album/${(item as? EchoMediaItem.Album)?.album.id}"
-            is Artist -> {
+            is EchoMediaItem.Track -> "https://www.qobuz.com/us-en/album/${(item as? EchoMediaItem.Track)?.track.album.id}"
+            is EchoMediaItem.Album -> "https://www.qobuz.com/us-en/album/${(item as? EchoMediaItem.Album)?.album.id}"
+            is EchoMediaItem.Artist -> {
                 val artist = (item as? EchoMediaItem.Artist)?.artist
                 val id = artist.id
                 val slug = artist.extras["slug"]
                 "https://www.qobuz.com/us-en/interpreter/$slug/$id"
             }
+            else -> ""
         }
     }
 
