@@ -157,8 +157,8 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
                 "https://www.qobuz.com/us-en/interpreter/$slug/$id"
             }
             is EchoMediaItem.Lists.PlaylistItem -> throw ClientException.NotSupported("TODO: Playlist sharing")
-            is EchoMediaItem.Lists.RadioItem -> throw ClientException.NotSupported("Will not be implement")
-            is EchoMediaItem.Profile.UserItem -> throw ClientException.NotSupported("Will not be implement")
+            is EchoMediaItem.Lists.RadioItem -> throw ClientException.NotSupported("Will not be implemented")
+            is EchoMediaItem.Profile.UserItem -> throw ClientException.NotSupported("Will not be implemented")
         }
     }
 
