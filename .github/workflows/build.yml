@@ -32,7 +32,7 @@ jobs:
           echo "VERSION=v$version" >> $GITHUB_ENV
           echo -e "## ${{ env.NAME }}\n${{ github.event.head_commit.message }}" > commit.txt
           echo "APP_PATH=app/build/${{ env.TAG }}-$version.eapk" >> $GITHUB_ENV
-          base64 -d ${{ secrets.KEYSTORE_B64 }} > "$GITHUB_WORKSPACE/signing-key.jks"
+          printf "%s" "${{ secrets.KEYSTORE_B64 }}" | base64 -d > "$GITHUB_WORKSPACE/signing-key.jks"
           chmod +x ./gradlew
 
       - name: Build with Gradle
