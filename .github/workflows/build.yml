@@ -49,10 +49,9 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
-      - name: Make Environment
+      - name: Move app
         run: |
-            ls app/build/outputs/apk/release
-            cp app/build/outputs/apk/release/app-release.apk ${{ env.APP_PATH }}
+            cp app/build/outputs/apk/release/app-release-unsigned-signed.apk ${{ env.APP_PATH }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
