@@ -40,6 +40,7 @@ jobs:
 
       - name: Sign APK
         uses: r0adkll/sign-android-release@v1
+        id: sign_app
         with:
           releaseDirectory: app/build/outputs/apk/release
           signingKeyBase64: ${{ secrets.KEYSTORE_B64 }}
@@ -51,7 +52,7 @@ jobs:
 
       - name: Move app
         run: |
-            cp app/build/outputs/apk/release/app-release-unsigned-signed.apk ${{ env.APP_PATH }}
+            cp ${{steps.sign_app.outputs.signedReleaseFile}} ${{ env.APP_PATH }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
