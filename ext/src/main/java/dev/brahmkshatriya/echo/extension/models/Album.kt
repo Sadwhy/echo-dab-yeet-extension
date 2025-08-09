@@ -38,7 +38,7 @@ data class Album(
             title = title,
             cover = images?.high?.toImageHolder() ?: cover.toImageHolder(),
             artists = listOf(Artist(id = artistId ?: artist, name = artist)),
-            trackCount = trackCount,
+            trackCount = trackCount.toLong(),
             duration = duration?.times(1000L),
             releaseDate = parseDate(releaseDate),
             label = label,

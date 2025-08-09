@@ -39,6 +39,8 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
     override suspend fun onExtensionSelected() {}
 
     override suspend fun onInitialize() {}
+    
+    override suspend fun getSettingItems() : List<Setting> = listOf<Setting>()
 
     //==== SearchFeedClient ====//
 
