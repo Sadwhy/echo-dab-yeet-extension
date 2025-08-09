@@ -43,7 +43,7 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
 
     override suspend fun loadSearchFeed(query: String): Feed<Shelf> {
         if (query.isBlank()) {
-            return Feed(pagedData = PagedData.empty<Shelf>() )
+            return listOf<Shelf>().toFeed()
         }
 
         val paged = PagedData.Single<Shelf> {
@@ -51,16 +51,17 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
             val (albums, tracks) = defaultSearch(query)
 
             val albumShelf = Shelf.Lists.Items(
+                id = "0"
                 title = "Albums",
                 list = albums,
                 type = Shelf.Lists.Type.Linear
             )
 
             val trackShelf = Shelf.Lists.Tracks(
+                id = "1",
                 title = "Songs",
                 subtitle = "Top Results",
                 list = tracks,
-                isNumbered = true,
                 type = Shelf.Lists.Type.Grid
             )
 
@@ -70,7 +71,7 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
             )
         }
 
-        return Feed(pagedData = paged)
+        return paged.toFeed()
     }
 
     private suspend fun defaultSearch(query: String, limit: Pair<Int, Int> = 0 to 0): Pair<List<EchoMediaItem>, List<Track>> = coroutineScope {
@@ -123,7 +124,7 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
         return null
     }
 
-    override suspend fun loadFeed(album: Album): Feed<Shelf>? = PagedData.empty<Shelf>()
+    override suspend fun loadFeed(album: Album): Feed<Shelf>? = null
 
     // ====== ArtistClient ===== //
     
