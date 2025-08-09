@@ -51,7 +51,7 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
             val (albums, tracks) = defaultSearch(query)
 
             val albumShelf = Shelf.Lists.Items(
-                id = "0"
+                id = "0",
                 title = "Albums",
                 list = albums,
                 type = Shelf.Lists.Type.Linear
@@ -83,7 +83,7 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
         val albumResponse = albumsDeferred.await()
         val trackResponse = tracksDeferred.await()
 
-        val albums = albumResponse.albums?.map { it.toAlbum().toShelf() } ?: emptyList()
+        val albums = albumResponse.albums?.map { it.toAlbum() } ?: emptyList()
         val tracks = trackResponse.tracks?.map { it.toTrack() } ?: emptyList()
 
         albums to tracks
@@ -142,16 +142,15 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
 
     override suspend fun onShare(item: EchoMediaItem): String {
         return when(item) {
-            is EchoMediaItem.TrackItem -> "https://www.qobuz.com/us-en/album/${item.extras["albumId"]}"
-            is EchoMediaItem.Lists.AlbumItem -> "https://www.qobuz.com/us-en/album/${item.id}"
-            is EchoMediaItem.Profile.ArtistItem -> {
+            is Track -> "https://www.qobuz.com/us-en/album/${item.extras["albumId"]}"
+            is Album -> "https://www.qobuz.com/us-en/album/${item.id}"
+            is Artist -> {
                 val id = item.id
                 val slug = item.extras["slug"]
                 "https://www.qobuz.com/us-en/interpreter/$slug/$id"
             }
-            is EchoMediaItem.Lists.PlaylistItem -> throw ClientException.NotSupported("TODO: Playlist sharing")
-            is EchoMediaItem.Lists.RadioItem -> throw ClientException.NotSupported("Will not be implemented")
-            is EchoMediaItem.Profile.UserItem -> throw ClientException.NotSupported("Will not be implemented")
+            is Playlist -> throw ClientException.NotSupported("TODO: Playlist sharing")
+            is Radio -> throw ClientException.NotSupported("Will not be implemented")
         }
     }
 
