@@ -13,11 +13,12 @@ import dev.brahmkshatriya.echo.common.helpers.PagedData
 import dev.brahmkshatriya.echo.common.models.Album
 import dev.brahmkshatriya.echo.common.models.Artist
 import dev.brahmkshatriya.echo.common.models.Feed
+import dev.brahmkshatriya.echo.common.models.Feed.Companion.toFeed
 import dev.brahmkshatriya.echo.common.models.QuickSearchItem
 import dev.brahmkshatriya.echo.common.models.Shelf
 import dev.brahmkshatriya.echo.common.models.Tab
 import dev.brahmkshatriya.echo.common.models.Track
-import dev.brahmkshatriya.echo.common.models.EchoMediaItem.Companion.toMediaItem
+import dev.brahmkshatriya.echo.common.models.EchoMediaItem.toShelf
 import dev.brahmkshatriya.echo.common.models.EchoMediaItem
 import dev.brahmkshatriya.echo.common.models.Streamable
 import dev.brahmkshatriya.echo.common.models.Streamable.Media.Companion.toServerMedia
@@ -36,22 +37,11 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
 
     override suspend fun onExtensionSelected() {}
 
-    override val settingItems: List<Setting> = emptyList()
-
-    private lateinit var setting: Settings
-    override fun setSettings(settings: Settings) {
-        setting = settings
-    }
+    override suspend fun onInitialize() {}
 
     //==== SearchFeedClient ====//
 
-    override suspend fun quickSearch(query: String): List<QuickSearchItem> = listOf()
-
-    override suspend fun deleteQuickSearch(item: QuickSearchItem) = Unit
-
-    override suspend fun searchTabs(query: String): List<Tab> = listOf()
-
-    override fun searchFeed(query: String, tab: Tab?): Feed {
+    override suspend fun loadSearchFeed(query: String): Feed<Shelf> {
         if (query.isBlank()) {
             return Feed(pagedData = PagedData.empty<Shelf>() )
         }
@@ -92,7 +82,7 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
         val albumResponse = albumsDeferred.await()
         val trackResponse = tracksDeferred.await()
 
-        val albums = albumResponse.albums?.map { it.toAlbum().toMediaItem() } ?: emptyList()
+        val albums = albumResponse.albums?.map { it.toAlbum().toShelf() } ?: emptyList()
         val tracks = trackResponse.tracks?.map { it.toTrack() } ?: emptyList()
 
         albums to tracks
@@ -106,14 +96,14 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
 
     // ====== TrackClient ======= //
 
-    override suspend fun loadTrack(track: Track): Track = track
+    override suspend fun loadTrack(track: Track, isDownload: Boolean): Track = track
 
     override suspend fun loadStreamableMedia(streamable: Streamable, isDownload: Boolean): Streamable.Media {
         val stream = api.getStream(streamable.id)
         return stream.url.toServerMedia()
     }
 
-    override fun getShelves(track: Track): PagedData<Shelf> = PagedData.empty<Shelf>()
+    override suspend fun loadFeed(track: Track): Feed<Shelf>? = null
     
     // ====== AlbumClient ====== //
 
@@ -125,13 +115,15 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
         }
     }
 
-    override fun loadTracks(album: Album): PagedData<Track> {
-        return PagedData.Single {
-            api.getAlbum(album.id).album.tracks?.map { it.toTrack() }.orEmpty()
+    override suspend fun loadTracks(album: Album): Feed<Track>? {
+        val albumList = api.getAlbum(album.id).album.tracks?.map { it.toTrack() }.orEmpty()
+        if (albumList.isNotEmpty()) {
+            return albumList.toFeed()
         }
+        return null
     }
 
-    override fun getShelves(album: Album): PagedData<Shelf> = PagedData.empty<Shelf>()
+    override suspend fun loadFeed(album: Album): Feed<Shelf>? = PagedData.empty<Shelf>()
 
     // ====== ArtistClient ===== //
     
@@ -143,7 +135,7 @@ class DabYeetExtension : ExtensionClient, SearchFeedClient, TrackClient, AlbumCl
         }
     }
 
-    override fun getShelves(artist: Artist): PagedData<Shelf> = PagedData.empty<Shelf>()
+    override suspend fun loadFeed(artist: Artist) : Feed<Shelf> = listOf<Shelf>().toFeed()
 
     // ====== ShareClient ===== //
 
