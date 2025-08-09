@@ -46,7 +46,7 @@ data class Track(
             duration = duration.times(1000L),
             releaseDate = parseDate(releaseDate),
             isExplicit = parentalWarning,
-            irsc = isrc,
+            isrc = isrc,
             genres = genre.split(" ").filter { it.isNotBlank() },
             extras = mapOf(
                 "albumId" to albumId

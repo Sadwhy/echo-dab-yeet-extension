@@ -18,7 +18,7 @@ data class ArtistResponse(
             id = artist.id,
             name = artist.name,
             cover = artist.image.high?.toImageHolder(),
-            description = artist.biography?.content.orEmpty(),
+            bio = artist.biography?.content.orEmpty(),
             extras = mapOf(
                 "similarArtistIds" to Json.encodeToString(artist.similarArtistIds),
                 "slug" to artist.slug,
@@ -56,7 +56,7 @@ data class Artist(
             id = id,
             name = name,
             cover = image.high?.toImageHolder(),
-            description = biography?.content.orEmpty(),
+            bio = biography?.content.orEmpty(),
             extras = mapOf(
                 "similarArtistIds" to Json.encodeToString(similarArtistIds),
                 "slug" to slug,

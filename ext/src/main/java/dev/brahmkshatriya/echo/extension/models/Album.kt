@@ -38,7 +38,7 @@ data class Album(
             title = title,
             cover = images?.high?.toImageHolder() ?: cover.toImageHolder(),
             artists = listOf(Artist(id = artistId ?: artist, name = artist)),
-            tracks = trackCount,
+            trackCount = trackCount,
             duration = duration?.times(1000L),
             releaseDate = parseDate(releaseDate),
             label = label,
@@ -47,7 +47,6 @@ data class Album(
         )
     }
 }
-
 
 @Serializable
 data class AlbumResponse(
